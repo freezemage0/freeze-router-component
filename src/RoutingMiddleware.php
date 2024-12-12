@@ -12,7 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class RoutingMiddleware implements MiddlewareInterface
 {
     public function __construct(
-            private readonly Router $router
+            private readonly Resolver $router
     ) {
     }
 
@@ -23,11 +23,11 @@ final class RoutingMiddleware implements MiddlewareInterface
         $request = $this->router->resolve($request);
 
         /** @var Route|null $route */
-        $route = $request->getAttribute(Router::ROUTE_ATTRIBUTE);
+        $route = $request->getAttribute(Resolver::ROUTE_ATTRIBUTE);
 
-        return match ($request->getAttribute(Router::RESOLVE_RESULT_ATTRIBUTE)) {
-            Router::RESOLVE_RESULT_NOT_FOUND => $response->withStatus(404, 'Not Found'),
-            Router::RESOLVE_RESULT_NOT_ALLOWED => $response->withStatus(405, 'Method Not Allowed'),
+        return match ($request->getAttribute(Resolver::RESOLVE_RESULT_ATTRIBUTE)) {
+            Resolver::RESOLVE_RESULT_NOT_FOUND => $response->withStatus(404, 'Not Found'),
+            Resolver::RESOLVE_RESULT_NOT_ALLOWED => $response->withStatus(405, 'Method Not Allowed'),
             default => $route?->handler->handle($request) ?? $response->withStatus(404, 'Not Found'),
         };
     }

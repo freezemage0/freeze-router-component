@@ -6,7 +6,7 @@ namespace Freeze\Component\Router;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-final class Router
+final class Resolver
 {
     public const ROUTE_ATTRIBUTE            = 'Freeze.Router.Route';
     public const RESOLVE_RESULT_ATTRIBUTE   = 'Freeze.Router.ResolveResult';
@@ -42,15 +42,17 @@ final class Router
         $pattern = '~' . \implode('|', $pattern) . '~';
 
         if (!\preg_match($pattern, $request->getRequestTarget(), $matches)) {
-            return $request->withAttribute(Router::RESOLVE_RESULT_ATTRIBUTE, Router::RESOLVE_RESULT_NOT_FOUND);
+            return $request->withAttribute(Resolver::RESOLVE_RESULT_ATTRIBUTE, Resolver::RESOLVE_RESULT_NOT_FOUND);
         }
 
         foreach ($map as $id => $route) {
             if (!empty($matches[$id])) {
-                return $request->withAttribute(Router::ROUTE_ATTRIBUTE, $route);
+                return $request
+                        ->withAttribute(Resolver::ROUTE_ATTRIBUTE, $route)
+                        ->withAttribute(Resolver::RESOLVE_RESULT_ATTRIBUTE, Resolver::RESOLVE_RESULT_FOUND);
             }
         }
 
-        return $request->withAttribute(Router::RESOLVE_RESULT_ATTRIBUTE, Router::RESOLVE_RESULT_NOT_FOUND);
+        return $request->withAttribute(Resolver::RESOLVE_RESULT_ATTRIBUTE, Resolver::RESOLVE_RESULT_NOT_FOUND);
     }
 }
