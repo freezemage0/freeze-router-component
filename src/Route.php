@@ -6,10 +6,10 @@ namespace Freeze\Component\Router;
 
 use Freeze\Component\Router\Contract\EndpointInterface;
 
-final readonly class Route
+final class Route
 {
-    private array $arguments;
-    public array  $requestMethods;
+    private readonly array $arguments;
+    public readonly array  $requestMethods;
 
     public static function fromCallable(
             string $pattern,
@@ -21,8 +21,8 @@ final readonly class Route
     }
 
     public function __construct(
-            public string $pattern,
-            public EndpointInterface $endpoint,
+            public readonly string $pattern,
+            public readonly EndpointInterface $endpoint,
             string $requestMethod,
             string ...$requestMethods
     ) {

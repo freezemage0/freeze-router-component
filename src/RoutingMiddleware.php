@@ -9,10 +9,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-final readonly class RoutingMiddleware implements MiddlewareInterface
+final class RoutingMiddleware implements MiddlewareInterface
 {
     public function __construct(
-            private Resolver $router
+            private readonly Resolver $router
     ) {
     }
 
