@@ -9,10 +9,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-final class RoutingMiddleware implements MiddlewareInterface
+final readonly class RoutingMiddleware implements MiddlewareInterface
 {
     public function __construct(
-            private readonly Resolver $router
+            private Resolver $router
     ) {
     }
 
@@ -22,7 +22,7 @@ final class RoutingMiddleware implements MiddlewareInterface
 
         $request = $this->router->resolve($request);
 
-        /** @var Route|null $route */
+        /** @var ?Route $route */
         $route = $request->getAttribute(Resolver::ROUTE_ATTRIBUTE);
 
         return match ($request->getAttribute(Resolver::RESOLVE_RESULT_ATTRIBUTE)) {

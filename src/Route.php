@@ -6,16 +6,20 @@ namespace Freeze\Component\Router;
 
 use Psr\Http\Server\RequestHandlerInterface;
 
-final class Route
+final readonly class Route
 {
-    public readonly array $requestMethods;
+    public array $requestMethods;
+
+    public static function fromCallable(string $pattern, callable $handler, string ...$requestMethods): Route
+    {
+        return new Route($pattern, new CallableRequestHandler($handler), ...$requestMethods);
+    }
 
     public function __construct(
-            public readonly string $pattern,
-            public readonly RequestHandlerInterface $handler,
+            public string $pattern,
+            public RequestHandlerInterface $handler,
             string ...$requestMethods
-    )
-    {
+    ) {
         $this->requestMethods = $requestMethods;
     }
 }
