@@ -36,7 +36,7 @@ final class Resolver
 
         while ($this->routes->valid()) {
             $chunk = [];
-            for ($i = 0; $i < $this->chunkSize; $i += 1) {
+            for ($i = 0; $i < $this->chunkSize && $this->routes->valid(); $i += 1) {
                 $chunk[] = $this->routes->current();
                 $this->routes->next();
             }
