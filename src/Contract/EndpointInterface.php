@@ -9,5 +9,9 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface EndpointInterface
 {
-    public function process(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface;
+    public function process(
+            ServerRequestInterface $request,
+            ResponseInterface $response,
+            array $arguments
+    ): ResponseInterface;
 }

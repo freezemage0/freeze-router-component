@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Freeze\Component\Router;
 
+use Freeze\Component\Router\Contract\ResolverInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class Resolver
+final class Resolver implements ResolverInterface
 {
     private const DEFAULT_CHUNK_SIZE = 10;
 
@@ -64,6 +65,9 @@ final class Resolver
         );
     }
 
+    /**
+     * @param array<array-key, Route> $routes
+     */
     private function resolveChunk(RequestInterface $request, array $routes): ?Route
     {
         $map = [];
@@ -75,7 +79,7 @@ final class Resolver
             $pattern[] = "(?<route_{$index}>{$route->pattern})";
         }
 
-        $pattern = '~' . \implode('|', $pattern) . '~';
+        $pattern = '~' . \implode('|', $pattern) . '~iuJ';
 
         if (!\preg_match($pattern, $request->getRequestTarget(), $matches)) {
             return null;
@@ -83,7 +87,7 @@ final class Resolver
 
         foreach ($map as $id => $route) {
             if (!empty($matches[$id])) {
-                return $route;
+                return $route->withArguments($matches);
             }
         }
 

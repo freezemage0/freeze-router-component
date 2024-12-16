@@ -17,8 +17,12 @@ final class CallableEndpoint implements EndpointInterface
         $this->handler = $handler(...);
     }
 
-    public function process(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function process(
+            ServerRequestInterface $request,
+            ResponseInterface $response,
+            array $arguments
+    ): ResponseInterface
     {
-        return \call_user_func($this->handler, $request, $response);
+        return \call_user_func($this->handler, $request, $response, $arguments);
     }
 }
