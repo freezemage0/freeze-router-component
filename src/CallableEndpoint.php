@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Freeze\Component\Router;
 
+use Freeze\Component\Router\Contract\EndpointInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
-final class CallableRequestHandler implements RequestHandlerInterface
+final class CallableEndpoint implements EndpointInterface
 {
     private \Closure $handler;
 
@@ -17,8 +17,8 @@ final class CallableRequestHandler implements RequestHandlerInterface
         $this->handler = $handler(...);
     }
 
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function process(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        return \call_user_func($this->handler, $request);
+        return \call_user_func($this->handler, $request, $response);
     }
 }
