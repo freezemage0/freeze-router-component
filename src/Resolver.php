@@ -70,25 +70,30 @@ final class Resolver implements ResolverInterface
      */
     private function resolveChunk(RequestInterface $request, array $routes): ?Route
     {
-        $map = [];
         $pattern = [];
 
-        foreach ($routes as $index => $route) {
-            $map["route_{$index}"] = $route;
-
-            $pattern[] = "(?<route_{$index}>{$route->pattern})";
+        foreach ($routes as $route) {
+            $pattern[] = "({$route->pattern})";
         }
 
-        $pattern = '~' . \implode('|', $pattern) . '~iuJ';
+        $pattern = '~^(?:' . \implode(" | \\n", $pattern) . ')$~x';
 
         if (!\preg_match($pattern, $request->getRequestTarget(), $matches)) {
             return null;
         }
 
-        foreach ($map as $id => $route) {
-            if (!empty($matches[$id])) {
-                return $route->withArguments($matches);
+        for ($i = 1, $length = count($matches); $i < $length; $i += 1) {
+            $match = $matches[$i] ?? null;
+            if (empty($match)) {
+                continue;
             }
+
+            $route = $routes[$i];
+            foreach (\array_keys($route->arguments) as $index => $argument) {
+                $route->arguments[$argument] = $matches[$i + $index];
+            }
+
+            return $route;
         }
 
         return null;

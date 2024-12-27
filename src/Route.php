@@ -8,8 +8,9 @@ use Freeze\Component\Router\Contract\EndpointInterface;
 
 final class Route
 {
-    private readonly array $arguments;
-    public readonly array  $requestMethods;
+    public readonly string $pattern;
+    public array $arguments = [];
+    public readonly array $requestMethods;
 
     public static function fromCallable(
             string $pattern,
@@ -21,26 +22,32 @@ final class Route
     }
 
     public function __construct(
-            public readonly string $pattern,
+            string $pattern,
             public readonly EndpointInterface $endpoint,
             string $requestMethod,
             string ...$requestMethods
     ) {
-        $requestMethods[] = $requestMethod;
+        $this->pattern = $this->parsePattern($pattern);
 
+        $requestMethods[] = $requestMethod;
         $this->requestMethods = $requestMethods;
     }
 
-    public function withArguments(array $arguments): Route
+    private function parsePattern(string $pattern): string
     {
-        $route = new Route($this->pattern, $this->endpoint, ...$this->requestMethods);
-        $route->arguments = $arguments;
+        return \preg_replace_callback(
+                '~\{([^}]+)}~',
+                function (array $matches): string {
+                    $argument = \explode(':', $matches[1]);
+                    $this->arguments[$argument[0]] = null;
 
-        return $route;
-    }
-
-    public function getArguments(): array
-    {
-        return $this->arguments ??= [];
+                    return match ($argument[1] ?? null) {
+                        'number' => '(\\d+)',
+                        'string' => '([A-Za-z]+)',
+                        default => '(.*)'
+                    };
+                },
+                $pattern
+        );
     }
 }
