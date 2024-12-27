@@ -29,8 +29,7 @@ final class Route
     ) {
         $this->pattern = $this->parsePattern($pattern);
 
-        $requestMethods[] = $requestMethod;
-        $this->requestMethods = $requestMethods;
+        $this->requestMethods = [$requestMethod, ...$requestMethods];
     }
 
     private function parsePattern(string $pattern): string
@@ -44,7 +43,7 @@ final class Route
                     return match ($argument[1] ?? null) {
                         'number' => '(\\d+)',
                         'string' => '([A-Za-z]+)',
-                        default => '(.*)'
+                        default => '([^/]+)'
                     };
                 },
                 $pattern

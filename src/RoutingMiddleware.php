@@ -28,7 +28,7 @@ final class RoutingMiddleware implements MiddlewareInterface
         return match ($request->getAttribute(Resolver::RESOLVE_RESULT_ATTRIBUTE)) {
             Resolver::RESOLVE_RESULT_NOT_FOUND => $response->withStatus(404, 'Not Found'),
             Resolver::RESOLVE_RESULT_NOT_ALLOWED => $response->withStatus(405, 'Method Not Allowed'),
-            default => $route?->endpoint->process($request, $response, $route->withArguments()) ?? $response->withStatus(404, 'Not Found'),
+            default => $route?->endpoint->process($request, $response, $route->arguments) ?? $response->withStatus(404, 'Not Found'),
         };
     }
 }

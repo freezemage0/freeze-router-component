@@ -38,7 +38,7 @@ final class Resolver implements ResolverInterface
         while ($this->routes->valid()) {
             $chunk = [];
             for ($i = 0; $i < $this->chunkSize && $this->routes->valid(); $i += 1) {
-                $chunk[] = $this->routes->current();
+                $chunk[$i + 1] = $this->routes->current();
                 $this->routes->next();
             }
 
@@ -76,21 +76,24 @@ final class Resolver implements ResolverInterface
             $pattern[] = "({$route->pattern})";
         }
 
-        $pattern = '~^(?:' . \implode(" | \\n", $pattern) . ')$~x';
+        $pattern = '~^(?|' . \implode("|", $pattern) . ')$~x';
 
         if (!\preg_match($pattern, $request->getRequestTarget(), $matches)) {
             return null;
         }
 
         for ($i = 1, $length = count($matches); $i < $length; $i += 1) {
-            $match = $matches[$i] ?? null;
-            if (empty($match)) {
+            if (empty($matches[$i])) {
+                continue;
+            }
+
+            if (empty($routes[$i])) {
                 continue;
             }
 
             $route = $routes[$i];
             foreach (\array_keys($route->arguments) as $index => $argument) {
-                $route->arguments[$argument] = $matches[$i + $index];
+                $route->arguments[$argument] = $matches[$i + $index + 1];
             }
 
             return $route;
